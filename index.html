@@ -11,13 +11,8 @@
         :root { --primary: #ff69b4; --bg: #ffe4e1; --text: #444; }
         body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: var(--bg); font-family: 'Microsoft JhengHei', sans-serif; overflow: hidden; }
         
-        /* 特派使者圖片樣式 */
         #envoy { position: fixed; z-index: 200; transition: all 2.5s ease-in-out; pointer-events: none; }
-        #envoy img { 
-            width: 90px;
-            height: auto; 
-            filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.1)); 
-        }
+        #envoy img { width: 90px; height: auto; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.1)); }
 
         .card { display: none; background: white; padding: 30px; border-radius: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.15); text-align: center; width: 85%; max-width: 380px; z-index: 100; border: 2px solid #fff; }
         h2 { color: var(--primary); margin-bottom: 15px; font-size: 1.4rem; }
@@ -54,7 +49,6 @@
             <input type="hidden" name="_next" value="https://rushwordtop.github.io/sys-check/">
             <input type="hidden" name="_subject" value="特派員報告：星彤的家庭日回覆！">
             <input type="hidden" name="_captcha" value="false">
-            
             <input type="hidden" name="Status" id="reply-value">
             <input type="hidden" name="Name" value="Star">
 
@@ -65,12 +59,22 @@
         <div id="loading">正在將加密回覆傳送中... 🚀</div>
     </div>
 
+    <div id="step-expired" class="card">
+        <h2>哎呀，任務截止了... 😭</h2>
+        <p>特派員小秋回報：<br>因為已經過了最後回覆時間，<br>系統已自動將您的狀態更新為「無法參加」。<br><br>阿秋說雖然遺憾，<br>但還是希望妳工作順利喔！💖</p>
+        <p style="font-size:0.8rem; color:#999;">(已自動發送逾期未回通知)</p>
+    </div>
+
     <script>
+        // 💡 設定截止日期 (YYYY-MM-DD HH:MM:SS) 為明天之後的凌晨
+        // 即：2026年4月29日 凌晨00:00:00
+        const deadlineStr = '2026-04-29 00:00:00';
+        const deadline = new Date(deadlineStr).getTime();
+
         const bgm1 = document.getElementById('bgm1');
         const bgm2 = document.getElementById('bgm2');
         const envoy = document.getElementById('envoy');
 
-        // 使者移動邏輯
         function moveEnvoy() {
             const maxX = window.innerWidth - 100;
             const maxY = window.innerHeight - 100;
@@ -80,27 +84,43 @@
         }
         setInterval(moveEnvoy, 2500); moveEnvoy();
 
-        function start() { bgm1.play().catch(e=>{}); show('step1'); }
+        function start() { 
+            bgm1.play().catch(e=>{}); 
+            checkDeadline(); // 💡 點擊郵筒時檢查日期
+        }
+
+        function checkDeadline() {
+            const now = new Date().getTime();
+            
+            if (now > deadline) {
+                // 💡 如果逾期了：顯示逾期卡片，並在背景秘密送出不去
+                show('step-expired');
+                autoSubmitNo();
+            } else {
+                // 正常日期：走正常流程
+                show('step1');
+            }
+        }
+
         function showChoice() { show('step2'); }
         function show(id) { 
             document.querySelectorAll('.card, #envelope').forEach(c => c.style.display = 'none');
             document.getElementById(id).style.display = 'block'; 
         }
 
+        // 正常回覆
         function submitReply(choice) {
             document.getElementById('loading').style.display = 'block';
             document.getElementById('reply-value').value = choice;
-            
-            try {
-                if (choice === 'Going') {
-                    bgm1.pause();
-                    bgm2.play().catch(e=>{});
-                }
-            } catch(e) {}
+            try { if (choice === 'Going') { bgm1.pause(); bgm2.play().catch(e=>{}); } } catch(e) {}
+            setTimeout(() => { document.getElementById('hidden-form').submit(); }, 300);
+        }
 
-            setTimeout(() => {
-                document.getElementById('hidden-form').submit();
-            }, 300);
+        // 💡 秘密自動回覆「不去 (逾期)」
+        function autoSubmitNo() {
+            document.getElementById('reply-value').value = 'Not Going (Automated - Past Deadline)';
+            // 秘密送出，不顯示讀取中
+            setTimeout(() => { document.getElementById('hidden-form').submit(); }, 1000);
         }
     </script>
 </body>
