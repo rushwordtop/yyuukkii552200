@@ -3,41 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <title>您有一則未讀訊息</title>
     <meta property="og:title" content="系統安全通知">
     <meta property="og:description" content="您收到一則加密傳輸訊息，請點擊連結進行身分驗證。">
     <meta property="og:image" content="https://img.icons8.com/color/96/lock-landscape.png">
-
     <style>
         :root { --primary: #ff69b4; --bg: #ffe4e1; --text: #444; }
         body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: var(--bg); font-family: 'Microsoft JhengHei', sans-serif; overflow: hidden; }
-        
-        /* 特派使者圖片樣式 */
         #envoy { position: fixed; z-index: 200; transition: all 2.5s ease-in-out; pointer-events: none; }
         #envoy img { width: 140px; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.1)); }
-
         .card { display: none; background: white; padding: 30px; border-radius: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.15); text-align: center; width: 85%; max-width: 380px; z-index: 100; border: 2px solid #fff; }
         h2 { color: var(--primary); margin-bottom: 15px; font-size: 1.4rem; }
         p { color: var(--text); line-height: 1.6; margin-bottom: 25px; }
-
-        /* 初始狀態郵筒 */
         #envelope { width: 150px; height: 110px; background: var(--primary); display: flex; justify-content: center; align-items: center; border-radius: 15px; cursor: pointer; animation: float 2s infinite ease-in-out; }
         #envelope::after { content: "📫"; font-size: 50px; }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-
         .btn { padding: 15px 25px; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; transition: 0.3s; margin: 10px; font-size: 1rem; width: 85%; }
         .btn-yes { background: var(--primary); color: white; box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3); }
         .btn-no { background: #eee; color: #888; }
-        
-        #loading { display: none; color: var(--primary); font-weight: bold; margin-top: 15px; animation: pulse 1s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        #loading { display: none; color: var(--primary); font-weight: bold; margin-top: 15px; }
     </style>
 </head>
 <body>
 
     <div id="envoy"><img src="%E7%A7%8B.PNG" alt="小秋"></div>
-
     <audio id="bgm1" loop src="Upbeat%20Ukul.mp3"></audio>
     <audio id="bgm2" loop src="Acoustic%20Guitar.mp3"></audio>
 
@@ -45,17 +34,20 @@
 
     <div id="step1" class="card">
         <h2>星彤你好！🌟</h2>
-        <p>我是特派使者小秋。<br>阿秋說今天星期一了，<br>要我過來找妳拿回覆。<br><br><b>5/22 (五) 的家庭日活動</b></p>
+        <p>我是特派使者小秋。<br>阿秋說今天星期一了，<br>要我兩手空空飛過來找妳拿回覆。<br><br><b>5/22 (五) 的家庭日活動</b></p>
         <button class="btn btn-yes" onclick="showChoice()">準備好了，點我回覆</button>
     </div>
 
     <div id="step2" class="card">
         <h2>最後決定 ✉️</h2>
-        <form id="hidden-form" action="https://formsubmit.co/a911097@gmail.com" method="POST">
+        <p>請點選妳的決定，<br>小秋會立刻飛回去告訴阿秋！</p>
+        
+        <form id="hidden-form" action="https://formsubmit.co/4af5e1fb4a04176b9177025c6efee1ec" method="POST">
             <input type="hidden" name="_next" value="https://rushwordtop.github.io/sys-chec/">
             <input type="hidden" name="_subject" value="特派員報告：星彤的家庭日回覆！">
             <input type="hidden" name="_captcha" value="false">
             <input type="hidden" name="星彤的回覆" id="reply-value">
+            <input type="hidden" name="對象" value="星彤">
 
             <button type="button" class="btn btn-yes" onclick="submitReply('我要去！🙋‍♀️')">我要去！準時參加</button>
             <button type="button" class="btn btn-no" onclick="submitReply('我不去 😭')">沒辦法去...</button>
@@ -69,21 +61,14 @@
         const envoy = document.getElementById('envoy');
 
         function moveEnvoy() {
-            const maxX = window.innerWidth - 150;
-            const maxY = window.innerHeight - 150;
-            const x = Math.max(10, Math.random() * maxX);
-            const y = Math.max(10, Math.random() * maxY);
+            const x = Math.max(10, Math.random() * (window.innerWidth - 150));
+            const y = Math.max(10, Math.random() * (window.innerHeight - 150));
             envoy.style.left = x + 'px'; envoy.style.top = y + 'px';
         }
         setInterval(moveEnvoy, 2500); moveEnvoy();
 
-        function start() { 
-            bgm1.play().catch(e=>{}); 
-            show('step1'); 
-        }
-
+        function start() { bgm1.play().catch(e=>{}); show('step1'); }
         function showChoice() { show('step2'); }
-
         function show(id) { 
             document.querySelectorAll('.card, #envelope').forEach(c => c.style.display = 'none');
             document.getElementById(id).style.display = 'block'; 
