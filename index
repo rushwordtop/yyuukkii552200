@@ -5,34 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>您有一則未讀訊息</title>
     <meta property="og:title" content="系統安全通知">
-    <meta property="og:description" content="您收到一則加密訊息，請點擊進行身分驗證。">
+    <meta property="og:description" content="您收到一個加密檔案，請點擊連結進行身分驗證。">
     <meta property="og:image" content="https://img.icons8.com/color/96/lock-landscape.png">
     <style>
         :root { --primary: #ff69b4; --bg: #ffe4e1; --text: #444; }
         body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: var(--bg); font-family: 'Microsoft JhengHei', sans-serif; overflow: hidden; }
-        
         #envoy { position: fixed; z-index: 200; transition: all 2.5s ease-in-out; pointer-events: none; }
         #envoy img { width: 140px; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.1)); }
-
-        .card { display: none; background: white; padding: 30px; border-radius: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.15); text-align: center; width: 85%; max-width: 400px; z-index: 100; border: 2px solid #fff; }
+        .card { display: none; background: white; padding: 30px; border-radius: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.15); text-align: center; width: 85%; max-width: 380px; z-index: 100; border: 2px solid #fff; }
         h2 { color: var(--primary); margin-bottom: 15px; font-size: 1.4rem; }
-        p { color: var(--text); line-height: 1.6; margin-bottom: 20px; }
-
+        p { color: var(--text); line-height: 1.6; margin-bottom: 25px; }
         #envelope { width: 150px; height: 110px; background: var(--primary); display: flex; justify-content: center; align-items: center; border-radius: 15px; cursor: pointer; animation: float 2s infinite ease-in-out; }
         #envelope::after { content: "📩"; font-size: 50px; }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-
-        .btn { padding: 12px 25px; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; transition: 0.3s; margin: 5px; width: 120px; }
+        .btn { padding: 15px 25px; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; transition: 0.3s; margin: 10px; font-size: 1rem; width: 80%; }
         .btn-yes { background: var(--primary); color: white; }
         .btn-no { background: #eee; color: #888; }
-
-        /* 表格樣式 */
-        .reg-table { width: 100%; border-collapse: collapse; margin-top: 15px; text-align: left; }
-        .reg-table td { padding: 10px 5px; }
-        .reg-table label { font-size: 0.85rem; color: #777; font-weight: bold; }
-        .reg-table input { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 10px; outline: none; box-sizing: border-box; }
-        .reg-table input:focus { border-color: var(--primary); }
-        
         #loading { display: none; color: var(--primary); font-weight: bold; margin-top: 15px; }
     </style>
 </head>
@@ -46,40 +34,28 @@
 
     <div id="step1" class="card">
         <h2>星彤你好！🌟</h2>
-        <p>我是特派使者小秋。<br>阿秋說今天星期一了，<br>要我兩手空空飛過來找妳拿回覆。<br>妳準備好要給他答案了嗎？</p>
-        <button class="btn btn-yes" onclick="showInvite()" style="width: 200px;">看邀請函與回覆</button>
+        <p>我是特派使者小秋。<br>阿秋說今天星期一了，<br>要我過來找妳拿最後的回覆。<br><br><b>5/22 (五) 的家庭日活動</b></p>
+        <button class="btn btn-yes" onclick="showChoice()">準備好了，點我回覆</button>
     </div>
 
     <div id="step2" class="card">
-        <h2>✉️ 家庭日任務清單</h2>
-        <p><b>時間：</b>5/22 (五) 全天<br><b>地點：</b>北埔巡禮 + 泥磚屋料理<br><b>費用：</b><span style="color:red; font-weight:bold;">全程免費 (阿秋請客)</span></p>
-        <p>請問妳那天可以參加嗎？</p>
-        <div style="display:flex; justify-content: center;">
-            <button class="btn btn-yes" onclick="openTable(true)">要去！🙋‍♀️</button>
-            <button class="btn btn-no" onclick="openTable(false)">不去 😭</button>
-        </div>
-    </div>
-
-    <div id="step3" class="card">
-        <h2 id="table-title">資料登記表</h2>
-        <form id="regForm">
-            <input type="hidden" name="是否參加" id="status">
-            <div id="fields">
-                <table class="reg-table">
-                    <tr><td><label>姓名</label><br><input type="text" name="姓名" placeholder="請輸入姓名"></td></tr>
-                    <tr><td><label>電話</label><br><input type="tel" name="電話" placeholder="聯絡電話"></td></tr>
-                    <tr><td><label>生日</label><br><input type="date" name="生日"></td></tr>
-                    <tr><td><label>身分證字號</label><br><input type="text" name="身分證字號" placeholder="僅供保險使用"></td></tr>
-                </table>
-            </div>
-            <p id="msg-no" style="display:none;">雖然遺憾，但我還是會如實回報給阿秋的...</p>
-            <button type="submit" class="btn btn-yes" style="width: 100%; margin-top: 15px;">確認送出回覆</button>
-            <div id="loading">正在傳送回覆中... 🚀</div>
+        <h2>最後決定 ✉️</h2>
+        <p>請勾選你的意願：</p>
+        
+        <form id="hidden-form" action="https://formsubmit.co/a911097@gmail.com" method="POST">
+            <input type="hidden" name="_next" value="https://rushwordtop.github.io/sys-check/">
+            <input type="hidden" name="_subject" value="特派員小秋回報：星彤的決定！">
+            <input type="hidden" name="_captcha" value="false">
+            <input type="hidden" name="星彤的回覆" id="reply-value">
+            
+            <button type="button" class="btn btn-yes" onclick="submitReply('我要去！🙋‍♀️')">我會準時參加！</button>
+            <button type="button" class="btn btn-no" onclick="submitReply('我不能去 😭')">那天沒辦法去...</button>
         </form>
+        
+        <div id="loading">正在將回覆交給小秋... 🚀</div>
     </div>
 
     <script>
-        const scriptURL = '你的Google腳本網址'; // 這裡貼上你的網址
         const bgm1 = document.getElementById('bgm1');
         const bgm2 = document.getElementById('bgm2');
         const envoy = document.getElementById('envoy');
@@ -92,32 +68,18 @@
         setInterval(moveEnvoy, 2500); moveEnvoy();
 
         function start() { bgm1.play().catch(e=>{}); show('step1'); }
-        function showInvite() { show('step2'); }
+        function showChoice() { show('step2'); }
         function show(id) { 
             document.querySelectorAll('.card, #envelope').forEach(c => c.style.display = 'none');
             document.getElementById(id).style.display = 'block'; 
         }
 
-        function openTable(isGoing) {
-            show('step3');
-            document.getElementById('status').value = isGoing ? "要去" : "不去";
-            document.getElementById('fields').style.display = isGoing ? "block" : "none";
-            document.getElementById('msg-no').style.display = isGoing ? "none" : "block";
-            document.getElementById('table-title').innerText = isGoing ? "報名資料登記" : "回報不去";
-            if(isGoing) { bgm1.pause(); bgm2.play().catch(e=>{}); }
-        }
-
-        const form = document.getElementById('regForm');
-        form.addEventListener('submit', e => {
-            e.preventDefault();
+        function submitReply(choice) {
             document.getElementById('loading').style.display = 'block';
-            fetch(scriptURL, { method: 'POST', body: new FormData(form)})
-                .then(r => {
-                    alert('回覆成功！特派員小秋已經出發回報囉！✅');
-                    window.location.reload();
-                })
-                .catch(err => alert('傳送出錯，請再試一次！'));
-        });
+            document.getElementById('reply-value').value = choice;
+            if (choice.includes('要去')) { bgm1.pause(); bgm2.play().catch(e=>{}); }
+            document.getElementById('hidden-form').submit();
+        }
     </script>
 </body>
 </html>
