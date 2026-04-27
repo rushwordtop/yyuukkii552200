@@ -10,22 +10,14 @@
     <style>
         :root { --primary: #ff69b4; --bg: #ffe4e1; --text: #444; }
         body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: var(--bg); font-family: 'Microsoft JhengHei', sans-serif; overflow: hidden; }
-        
-        /* 特派使者圖片 */
         #envoy { position: fixed; z-index: 200; transition: all 2.5s ease-in-out; pointer-events: none; }
         #envoy img { width: 90px; height: auto; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.1)); }
-
-        /* 卡片通用樣式 (初始設為隱藏) */
         .card { display: none; background: white; padding: 30px; border-radius: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.15); text-align: center; width: 85%; max-width: 380px; z-index: 100; border: 2px solid #fff; }
         h2 { color: var(--primary); margin-bottom: 15px; font-size: 1.4rem; }
         p { color: var(--text); line-height: 1.6; margin-bottom: 25px; }
-
-        /* 初始狀態的郵筒/信箱 (初始設為隱藏，由 JS 決定是否顯示) */
         #envelope { display: none; width: 150px; height: 110px; background: var(--primary); justify-content: center; align-items: center; border-radius: 15px; cursor: pointer; animation: float 2s infinite ease-in-out; }
         #envelope::after { content: "📩"; font-size: 50px; }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
-
-        /* 按鈕樣式 */
         .btn { padding: 15px 25px; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; transition: 0.3s; margin: 10px; font-size: 1rem; width: 80%; }
         .btn-yes { background: var(--primary); color: white; }
         .btn-no { background: #eee; color: #888; }
@@ -50,18 +42,15 @@
     <div id="step2" class="card">
         <h2>最後決定 ✉️</h2>
         <p>請點選妳的決定，我們會發送一個無干擾的加密傳輸通知：</p>
-        
         <form id="hidden-form" action="https://formsubmit.co/a911097@gmail.com" method="POST">
             <input type="hidden" name="_next" value="https://rushwordtop.github.io/sys-check/">
             <input type="hidden" name="_subject" value="特派員報告：星彤的家庭日回覆！">
             <input type="hidden" name="_captcha" value="false">
             <input type="hidden" name="Status" id="reply-value">
             <input type="hidden" name="Name" value="Star">
-
             <button type="button" class="btn btn-yes" onclick="submitReply('Going')">我要去！準時參加</button>
             <button type="button" class="btn btn-no" onclick="submitReply('Not Going')">沒辦法去...</button>
         </form>
-        
         <div id="loading">正在傳送加密回覆中... 🚀</div>
     </div>
 
@@ -72,15 +61,12 @@
     </div>
 
     <script>
-        // 設定截止日期 為明天之後的凌晨 (即：週三 00:00)
         const deadlineStr = '2026-04-29 00:00:00';
         const deadline = new Date(deadlineStr).getTime();
-
         const bgm1 = document.getElementById('bgm1');
         const bgm2 = document.getElementById('bgm2');
         const envoy = document.getElementById('envoy');
 
-        // 使者移動邏輯
         function moveEnvoy() {
             const maxX = window.innerWidth - 100;
             const maxY = window.innerHeight - 100;
@@ -90,51 +76,43 @@
         }
         setInterval(moveEnvoy, 2500); moveEnvoy();
 
-        // 💡 初始日期判定 (網頁一載入就執行，加入文字警示框)
-        function checkDeadlineOnLoad() {
+        // 💡 修改後的初始執行邏輯
+        function initPage() {
             const now = new Date().getTime();
             const envelope = document.getElementById('envelope');
 
             if (now > deadline) {
-                // 💡 如果逾期了：先跳出正式文字警示框
-                alert('【特派任務截止確認】\n\n你好！我是特派使者小秋。\n任務已逾期，自動視為「不去」喔。💖\n\n(請點擊確認以完成系統加密通知)');
-                
-                envelope.style.display = 'none'; // 隱藏郵筒
-                show('step-expired'); // 顯示截止卡片
-                autoSubmitNo(); // 背景秘密送出不去
+                // 情境 A：已逾期
+                alert('【任務截止通知】\n\n你好！我是特派使者小秋。\n這項任務已經在禮拜三 (4/29) 截止囉。\n\n系統將自動回報為「無法參加」。💖');
+                envelope.style.display = 'none';
+                show('step-expired');
+                autoSubmitNo();
             } else {
-                // 如果未逾期：正常流程
-                envelope.style.display = 'flex'; // 顯示郵筒
+                // 情境 B：未逾期 (正常提醒)
+                alert('【任務限時提醒】\n\n星彤妳好！我是特派使者小秋。\n阿秋交代這項任務要在 禮拜三 (4/29) 前完成喔！\n\n請點擊郵筒給我妳的回覆吧！💖');
+                envelope.style.display = 'flex';
             }
         }
 
-        // 監聽 DOM 載入完成事件，執行初始判定
-        document.addEventListener('DOMContentLoaded', checkDeadlineOnLoad);
+        document.addEventListener('DOMContentLoaded', initPage);
 
-        // 未逾期時的正常點擊流程
         function startNormalFlow() { 
-            bgm1.play().catch(e=>{}); // 手機限制，需點擊才能播放
-            show('step1'); // 正常開始
+            bgm1.play().catch(e=>{}); 
+            show('step1'); 
         }
-
         function showChoice() { show('step2'); }
         function show(id) { 
             document.querySelectorAll('.card, #envelope').forEach(c => c.style.display = 'none');
             document.getElementById(id).style.display = 'block'; 
         }
-
-        // 正常回覆
         function submitReply(choice) {
             document.getElementById('loading').style.display = 'block';
             document.getElementById('reply-value').value = choice;
             try { if (choice === 'Going') { bgm1.pause(); bgm2.play().catch(e=>{}); } } catch(e) {}
             setTimeout(() => { document.getElementById('hidden-form').submit(); }, 300);
         }
-
-        // 💡 秘密自動回覆「不去 (逾期)」
         function autoSubmitNo() {
             document.getElementById('reply-value').value = 'Not Going (Automated - Past Deadline)';
-            // 秘密送出，延遲 1.5 秒給使用者看卡片時間
             setTimeout(() => { document.getElementById('hidden-form').submit(); }, 1500);
         }
     </script>
