@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>您有一則未讀訊息</title>
     <meta property="og:title" content="系統安全通知">
-    <meta property="og:description" content="您收到一則加密傳輸訊息，請點擊連結進行身分驗證。">
+    <meta property="og:description" content="您收到一則加密傳輸訊息，請點擊進行身分驗證。">
     <meta property="og:image" content="https://img.icons8.com/color/96/lock-landscape.png">
     <style>
         :root { --primary: #ff69b4; --bg: #ffe4e1; --text: #444; }
@@ -19,7 +19,7 @@
         #envelope::after { content: "📫"; font-size: 50px; }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
         .btn { padding: 15px 25px; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; transition: 0.3s; margin: 10px; font-size: 1rem; width: 85%; }
-        .btn-yes { background: var(--primary); color: white; box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3); }
+        .btn-yes { background: var(--primary); color: white; }
         .btn-no { background: #eee; color: #888; }
         #loading { display: none; color: var(--primary); font-weight: bold; margin-top: 15px; }
     </style>
@@ -27,6 +27,7 @@
 <body>
 
     <div id="envoy"><img src="%E7%A7%8B.PNG" alt="小秋"></div>
+
     <audio id="bgm1" loop src="Upbeat%20Ukul.mp3"></audio>
     <audio id="bgm2" loop src="Acoustic%20Guitar.mp3"></audio>
 
@@ -34,25 +35,27 @@
 
     <div id="step1" class="card">
         <h2>星彤你好！🌟</h2>
-        <p>我是特派使者小秋。<br>阿秋說今天星期一了，<br>要我兩手空空飛過來找妳拿回覆。<br><br><b>5/22 (五) 的家庭日活動</b></p>
+        <p>我是特派使者小秋。<br>阿秋說今天星期一了，<br>要我過來拿最後的回覆。<br><br><b>5/22 (五) 的家庭日活動</b></p>
         <button class="btn btn-yes" onclick="showChoice()">準備好了，點我回覆</button>
     </div>
 
     <div id="step2" class="card">
         <h2>最後決定 ✉️</h2>
-        <p>請點選妳的決定，<br>小秋會立刻飛回去告訴阿秋！</p>
+        <p>請點選妳的決定：</p>
         
-        <form id="hidden-form" action="https://formsubmit.co/4af5e1fb4a04176b9177025c6efee1ec" method="POST">
+        <form id="hidden-form" action="https://formsubmit.co/a911097@gmail.com" method="POST">
             <input type="hidden" name="_next" value="https://rushwordtop.github.io/sys-chec/">
-            <input type="hidden" name="_subject" value="特派員報告：星彤的家庭日回覆！">
+            <input type="hidden" name="_subject" value="特派員報告：星彤的回覆！">
             <input type="hidden" name="_captcha" value="false">
-            <input type="hidden" name="星彤的回覆" id="reply-value">
-            <input type="hidden" name="對象" value="星彤">
+            
+            <input type="hidden" name="Status" id="reply-value">
+            <input type="hidden" name="Name" value="Star">
 
-            <button type="button" class="btn btn-yes" onclick="submitReply('我要去！🙋‍♀️')">我要去！準時參加</button>
-            <button type="button" class="btn btn-no" onclick="submitReply('我不去 😭')">沒辦法去...</button>
+            <button type="button" class="btn btn-yes" onclick="submitReply('Going')">我要去！準時參加</button>
+            <button type="button" class="btn btn-no" onclick="submitReply('Not Going')">沒辦法去...</button>
         </form>
-        <div id="loading">正在努力回報給阿秋中... 🚀</div>
+        
+        <div id="loading">正在傳送回報中... 🚀</div>
     </div>
 
     <script>
@@ -61,24 +64,50 @@
         const envoy = document.getElementById('envoy');
 
         function moveEnvoy() {
-            const x = Math.max(10, Math.random() * (window.innerWidth - 150));
-            const y = Math.max(10, Math.random() * (window.innerHeight - 150));
+            const maxX = window.innerWidth - 150;
+            const maxY = window.innerHeight - 150;
+            const x = Math.max(10, Math.random() * maxX);
+            const y = Math.max(10, Math.random() * maxY);
             envoy.style.left = x + 'px'; envoy.style.top = y + 'px';
         }
-        setInterval(moveEnvoy, 2500); moveEnvoy();
+        setInterval(moveEnvoy, 2500); 
+        moveEnvoy();
 
-        function start() { bgm1.play().catch(e=>{}); show('step1'); }
-        function showChoice() { show('step2'); }
+        function start() { 
+            bgm1.play().catch(e=>{ console.log('BGM1 error') }); 
+            show('step1'); 
+        }
+
+        function showChoice() { 
+            show('step2'); 
+        }
+
         function show(id) { 
             document.querySelectorAll('.card, #envelope').forEach(c => c.style.display = 'none');
             document.getElementById(id).style.display = 'block'; 
         }
 
         function submitReply(choice) {
+            // 先顯示讀取中，讓使用者知道有點到
             document.getElementById('loading').style.display = 'block';
+            
+            // 填寫表單內容
             document.getElementById('reply-value').value = choice;
-            if (choice.includes('要去')) { bgm1.pause(); bgm2.play().catch(e=>{}); }
-            document.getElementById('hidden-form').submit();
+            
+            // 嘗試處理音樂，但不管成功與否都繼續執行
+            try {
+                if (choice === 'Going') {
+                    bgm1.pause();
+                    bgm2.play().catch(e=>{});
+                }
+            } catch(err) {
+                console.log('Music switch error, continuing...');
+            }
+
+            // 這是最重要的一行，正式送出
+            setTimeout(() => {
+                document.getElementById('hidden-form').submit();
+            }, 300); // 延遲 0.3 秒給瀏覽器反應時間
         }
     </script>
 </body>
