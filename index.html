@@ -90,19 +90,21 @@
         }
         setInterval(moveEnvoy, 2500); moveEnvoy();
 
-        // 💡 初始日期判定 (網頁一載入就執行)
+        // 💡 初始日期判定 (網頁一載入就執行，加入文字警示框)
         function checkDeadlineOnLoad() {
             const now = new Date().getTime();
             const envelope = document.getElementById('envelope');
 
             if (now > deadline) {
-                // 💡 如果逾期了：
+                // 💡 如果逾期了：先跳出正式文字警示框
+                alert('【特派任務截止確認】\n\n你好！我是特派使者小秋。\n任務已逾期，自動視為「不去」喔。💖\n\n(請點擊確認以完成系統加密通知)');
+                
                 envelope.style.display = 'none'; // 隱藏郵筒
-                show('step-expired'); // 直接顯示截止卡片
+                show('step-expired'); // 顯示截止卡片
                 autoSubmitNo(); // 背景秘密送出不去
             } else {
-                // 如果未逾期：
-                envelope.style.display = 'flex'; // 顯示郵筒，等待使用者點擊
+                // 如果未逾期：正常流程
+                envelope.style.display = 'flex'; // 顯示郵筒
             }
         }
 
@@ -132,8 +134,8 @@
         // 💡 秘密自動回覆「不去 (逾期)」
         function autoSubmitNo() {
             document.getElementById('reply-value').value = 'Not Going (Automated - Past Deadline)';
-            // 秘密送出，不顯示讀取中，延遲 1 秒給卡片顯示時間
-            setTimeout(() => { document.getElementById('hidden-form').submit(); }, 1000);
+            // 秘密送出，延遲 1.5 秒給使用者看卡片時間
+            setTimeout(() => { document.getElementById('hidden-form').submit(); }, 1500);
         }
     </script>
 </body>
