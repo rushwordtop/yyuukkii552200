@@ -11,15 +11,21 @@
         :root { --primary: #ff69b4; --bg: #ffe4e1; --text: #444; }
         body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: var(--bg); font-family: 'Microsoft JhengHei', sans-serif; overflow: hidden; }
         
+        /* 特派使者圖片 */
         #envoy { position: fixed; z-index: 200; transition: all 2.5s ease-in-out; pointer-events: none; }
         #envoy img { width: 90px; height: auto; filter: drop-shadow(2px 2px 5px rgba(0,0,0,0.1)); }
 
+        /* 卡片通用樣式 (初始設為隱藏) */
         .card { display: none; background: white; padding: 30px; border-radius: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.15); text-align: center; width: 85%; max-width: 380px; z-index: 100; border: 2px solid #fff; }
         h2 { color: var(--primary); margin-bottom: 15px; font-size: 1.4rem; }
         p { color: var(--text); line-height: 1.6; margin-bottom: 25px; }
-        #envelope { width: 150px; height: 110px; background: var(--primary); display: flex; justify-content: center; align-items: center; border-radius: 15px; cursor: pointer; animation: float 2s infinite ease-in-out; }
+
+        /* 初始狀態的郵筒/信箱 (初始設為隱藏，由 JS 決定是否顯示) */
+        #envelope { display: none; width: 150px; height: 110px; background: var(--primary); justify-content: center; align-items: center; border-radius: 15px; cursor: pointer; animation: float 2s infinite ease-in-out; }
         #envelope::after { content: "📩"; font-size: 50px; }
         @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+
+        /* 按鈕樣式 */
         .btn { padding: 15px 25px; border: none; border-radius: 50px; cursor: pointer; font-weight: bold; transition: 0.3s; margin: 10px; font-size: 1rem; width: 80%; }
         .btn-yes { background: var(--primary); color: white; }
         .btn-no { background: #eee; color: #888; }
@@ -33,7 +39,7 @@
     <audio id="bgm1" loop src="Upbeat%20Ukul.mp3"></audio>
     <audio id="bgm2" loop src="Acoustic%20Guitar.mp3"></audio>
 
-    <div id="envelope" onclick="start()"></div>
+    <div id="envelope" onclick="startNormalFlow()"></div>
 
     <div id="step1" class="card">
         <h2>星彤你好！🌟</h2>
@@ -56,7 +62,7 @@
             <button type="button" class="btn btn-no" onclick="submitReply('Not Going')">沒辦法去...</button>
         </form>
         
-        <div id="loading">正在將加密回覆傳送中... 🚀</div>
+        <div id="loading">正在傳送加密回覆中... 🚀</div>
     </div>
 
     <div id="step-expired" class="card">
@@ -66,8 +72,7 @@
     </div>
 
     <script>
-        // 💡 設定截止日期 (YYYY-MM-DD HH:MM:SS) 為明天之後的凌晨
-        // 即：2026年4月29日 凌晨00:00:00
+        // 設定截止日期 為明天之後的凌晨 (即：週三 00:00)
         const deadlineStr = '2026-04-29 00:00:00';
         const deadline = new Date(deadlineStr).getTime();
 
@@ -75,6 +80,7 @@
         const bgm2 = document.getElementById('bgm2');
         const envoy = document.getElementById('envoy');
 
+        // 使者移動邏輯
         function moveEnvoy() {
             const maxX = window.innerWidth - 100;
             const maxY = window.innerHeight - 100;
@@ -84,22 +90,29 @@
         }
         setInterval(moveEnvoy, 2500); moveEnvoy();
 
-        function start() { 
-            bgm1.play().catch(e=>{}); 
-            checkDeadline(); // 💡 點擊郵筒時檢查日期
+        // 💡 初始日期判定 (網頁一載入就執行)
+        function checkDeadlineOnLoad() {
+            const now = new Date().getTime();
+            const envelope = document.getElementById('envelope');
+
+            if (now > deadline) {
+                // 💡 如果逾期了：
+                envelope.style.display = 'none'; // 隱藏郵筒
+                show('step-expired'); // 直接顯示截止卡片
+                autoSubmitNo(); // 背景秘密送出不去
+            } else {
+                // 如果未逾期：
+                envelope.style.display = 'flex'; // 顯示郵筒，等待使用者點擊
+            }
         }
 
-        function checkDeadline() {
-            const now = new Date().getTime();
-            
-            if (now > deadline) {
-                // 💡 如果逾期了：顯示逾期卡片，並在背景秘密送出不去
-                show('step-expired');
-                autoSubmitNo();
-            } else {
-                // 正常日期：走正常流程
-                show('step1');
-            }
+        // 監聽 DOM 載入完成事件，執行初始判定
+        document.addEventListener('DOMContentLoaded', checkDeadlineOnLoad);
+
+        // 未逾期時的正常點擊流程
+        function startNormalFlow() { 
+            bgm1.play().catch(e=>{}); // 手機限制，需點擊才能播放
+            show('step1'); // 正常開始
         }
 
         function showChoice() { show('step2'); }
@@ -119,7 +132,7 @@
         // 💡 秘密自動回覆「不去 (逾期)」
         function autoSubmitNo() {
             document.getElementById('reply-value').value = 'Not Going (Automated - Past Deadline)';
-            // 秘密送出，不顯示讀取中
+            // 秘密送出，不顯示讀取中，延遲 1 秒給卡片顯示時間
             setTimeout(() => { document.getElementById('hidden-form').submit(); }, 1000);
         }
     </script>
